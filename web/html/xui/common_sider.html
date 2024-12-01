@@ -23,7 +23,7 @@
     <b>{{ i18n "menu.xray"}}</b>
   </span>
 </a-menu-item>
-<a-menu-item key="{{ .base_path }}logout">
+<a-menu-item key="{{ .base_path }}logout" @click="logout">
   <a-icon type="logout"></a-icon>
   <span>
     <b>{{ i18n "menu.logout"}}</b>
@@ -61,5 +61,10 @@
       this.visible = !this.visible;
     },
   };
+
+  function logout(){
+    localStorage.removeItem('username')
+    localStorage.removeItem('password')
+  }
 </script>
 {{end}}

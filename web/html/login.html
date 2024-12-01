@@ -475,83 +475,102 @@
 {{template "js" .}}
 {{template "component/themeSwitcher" .}}
 {{template "component/password" .}}
-<script>
-  class User {
-    constructor() {
-      this.username = "";
-      this.password = "";
-    }
-  }
-  const app = new Vue({
-    delimiters: ['[[', ']]'],
-    el: '#app',
-    data: {
-      themeSwitcher,
-      loading: false,
-      user: new User(),
-      secretEnable: false,
-      lang: ""
-    },
-    async created() {
-      this.lang = getLang();
-      this.secretEnable = await this.getSecretStatus();
-    },
-    methods: {
-      async login() {
-        this.loading = true;
-        const msg = await HttpUtil.post('/login', this.user);
-        this.loading = false;
-        if (msg.success) {
-          location.href = basePath + 'panel/';
-        }
-      },
-      async getSecretStatus() {
-        this.loading = true;
-        const msg = await HttpUtil.post('/getSecretStatus');
-        this.loading = false;
-        if (msg.success) {
-          this.secretEnable = msg.obj;
-          return msg.obj;
-        }
-      },
-    },
-  });
-  document.addEventListener("DOMContentLoaded", function() {
-    var animationDelay = 2000;
-    initHeadline();
-
-    function initHeadline() {
-      animateHeadline(document.querySelectorAll('.headline'));
+  <script>
+    class User {
+      constructor() {
+        this.username = "";
+        this.password = "";
+      }
     }
 
-    function animateHeadline(headlines) {
-      var duration = animationDelay;
-      headlines.forEach(function(headline) {
+    const app = new Vue({
+      delimiters: ['[[', ']]'],
+      el: '#app',
+      data: {
+        themeSwitcher,
+        loading: false,
+        user: new User(),
+        secretEnable: false,
+        lang: ""
+      },
+      async created() {
+        this.lang = getLang();
+        this.secretEnable = await this.getSecretStatus();
+        this.checkAutoLogin();
+      },
+      methods: {
+        async login() {
+          this.loading = true;
+          const msg = await HttpUtil.post('/login', this.user);
+          this.loading = false;
+          if (msg.success) {
+            // Store user credentials in localStorage after successful login
+            localStorage.setItem('username', this.user.username);
+            localStorage.setItem('password', this.user.password);
+            location.href = basePath + 'panel/inbounds';
+          }
+        },
+        async getSecretStatus() {
+          this.loading = true;
+          const msg = await HttpUtil.post('/getSecretStatus');
+          this.loading = false;
+          if (msg.success) {
+            this.secretEnable = msg.obj;
+            return msg.obj;
+          }
+        },
+        checkAutoLogin() {
+          // Check if username and password exist in localStorage
+          const storedUsername = localStorage.getItem('username');
+          const storedPassword = localStorage.getItem('password');
+
+          if (storedUsername && storedPassword) {
+            // Automatically log in if credentials exist
+            this.user.username = storedUsername;
+            this.user.password = storedPassword;
+            this.login();  // Call login method to authenticate user
+          }
+        }
+      },
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+      var animationDelay = 2000;
+      initHeadline();
+
+      function initHeadline() {
+        animateHeadline(document.querySelectorAll('.headline'));
+      }
+
+      function animateHeadline(headlines) {
+        var duration = animationDelay;
+        headlines.forEach(function(headline) {
+          setTimeout(function() {
+            hideWord(headline.querySelector('.is-visible'));
+          }, duration);
+        });
+      }
+
+      function hideWord(word) {
+        var nextWord = takeNext(word);
+        switchWord(word, nextWord);
         setTimeout(function() {
-          hideWord(headline.querySelector('.is-visible'));
-        }, duration);
-      });
-    }
+          hideWord(nextWord);
+        }, animationDelay);
+      }
 
-    function hideWord(word) {
-      var nextWord = takeNext(word);
-      switchWord(word, nextWord);
-      setTimeout(function() {
-        hideWord(nextWord);
-      }, animationDelay);
-    }
+      function takeNext(word) {
+        return (word.nextElementSibling) ? word.nextElementSibling : word.parentElement.firstElementChild;
+      }
 
-    function takeNext(word) {
-      return (word.nextElementSibling) ? word.nextElementSibling : word.parentElement.firstElementChild;
-    }
+      function switchWord(oldWord, newWord) {
+        oldWord.classList.remove('is-visible');
+        oldWord.classList.add('is-hidden');
+        newWord.classList.remove('is-hidden');
+        newWord.classList.add('is-visible');
+      }
+    });
+  </script>
 
-    function switchWord(oldWord, newWord) {
-      oldWord.classList.remove('is-visible');
-      oldWord.classList.add('is-hidden');
-      newWord.classList.remove('is-hidden');
-      newWord.classList.add('is-visible');
-    }
-  });
-</script>
 </body>
 </html>
