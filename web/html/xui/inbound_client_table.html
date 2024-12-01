@@ -47,8 +47,9 @@
       <template v-else-if="!client.enable">{{ i18n "disabled" }}</template>
       <template v-else-if="client.enable && isClientOnline(client.email)">{{ i18n "online" }}</template>
     </template>
-    <a-badge :class="isClientOnline(client.email)? 'online-animation' : ''" :color="client.enable ? statsExpColor(record, client.email) : themeSwitcher.isDarkTheme ? '#2c3950' : '#bcbcbc'"></a-badge>
-  </a-tooltip> [[ client.email ]]
+    <a-badge :class="isClientOnline(client.email)? 'online-animation' : ''"
+             :color="isClientOnline(client.email)? 'green' : 'grey'"></a-badge>
+  </a-tooltip>[[ client.email ]]
 </template>
 <template slot="traffic" slot-scope="text, client">
   <a-popover :overlay-class-name="themeSwitcher.currentTheme">

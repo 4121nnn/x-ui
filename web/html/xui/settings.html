@@ -74,17 +74,6 @@
     <a-layout id="content-layout">
       <a-layout-content>
         <a-spin :spinning="spinning" :delay="500" tip='{{ i18n "loading"}}'>
-          <transition name="list" appear>
-            <a-alert type="error" v-if="confAlerts.length>0" style="margin-bottom: 10px;"
-                message='{{ i18n "secAlertTitle" }}'
-                color="red"
-                show-icon closable>
-              <template slot="description">
-                <b>{{ i18n "secAlertConf" }}</b>
-                <ul><li v-for="a in confAlerts">[[ a ]]</li></ul>
-              </template>
-            </a-alert>
-          </transition>
           <a-space direction="vertical">
             <a-card hoverable style="margin-bottom: .5rem; overflow-x: hidden;">
               <a-row style="display: flex; flex-wrap: wrap; align-items: center;">

@@ -60,8 +60,7 @@
     border: #D5BED2 solid 1px;
   }
   .dark .infinite-bar .ant-progress-inner .ant-progress-bg {
-    background-color: #7a316f !important;
-    border: #7a316f solid 1px;
+
   }
   .ant-collapse {
     margin: 5px 0;
@@ -128,118 +127,76 @@
   <a-layout id="content-layout">
     <a-layout-content>
       <a-spin :spinning="spinning" :delay="500" tip='{{ i18n "loading"}}'>
-        <transition name="list" appear>
-          <a-alert type="error" v-if="showAlert" style="margin-bottom: 10px"
-            message='{{ i18n "secAlertTitle" }}'
-            color="red"
-            description='{{ i18n "secAlertSsl" }}'
-            show-icon closable>
-          </a-alert>
-        </transition>
-        <transition name="list" appear>
+
+<!-- header -->
+        <div style="padding: 10px;">
+          <a-row>
+            <a-col :xs="12" :sm="12" :lg="12" style="display: flex; align-items: center;">
+              <a-button type="primary" icon="plus" @click="openAddInbound">
+                <template v-if="!isMobile">{{ i18n "pages.inbounds.addInbound" }}</template>
+              </a-button>
+              <a-dropdown :trigger="['click']">
+                <a-button type="primary" icon="menu">
+                  <template v-if="!isMobile">{{ i18n "pages.inbounds.generalActions" }}</template>
+                </a-button>
+                <a-menu slot="overlay" @click="a => generalActions(a)" :theme="themeSwitcher.currentTheme">
+                  <a-menu-item key="import">
+                    <a-icon type="import"></a-icon>
+                    {{ i18n "pages.inbounds.importInbound" }}
+                  </a-menu-item>
+                  <a-menu-item key="export">
+                    <a-icon type="export"></a-icon>
+                    {{ i18n "pages.inbounds.export" }}
+                  </a-menu-item>
+                  <a-menu-item key="subs" v-if="subSettings.enable">
+                    <a-icon type="export"></a-icon>
+                    {{ i18n "pages.inbounds.export" }} - {{ i18n "pages.settings.subSettings" }}
+                  </a-menu-item>
+                  <a-menu-item key="resetInbounds">
+                    <a-icon type="reload"></a-icon>
+                    {{ i18n "pages.inbounds.resetAllTraffic" }}
+                  </a-menu-item>
+                  <a-menu-item key="resetClients">
+                    <a-icon type="file-done"></a-icon>
+                    {{ i18n "pages.inbounds.resetAllClientTraffics" }}
+                  </a-menu-item>
+                  <a-menu-item key="delDepletedClients" style="color: #FF4D4F;">
+                    <a-icon type="rest"></a-icon>
+                    {{ i18n "pages.inbounds.delDepletedClients" }}
+                  </a-menu-item>
+                </a-menu>
+              </a-dropdown>
+              <div style="display: flex; align-items: center; margin-left: 10px;">
+                <a-back-top :target="() => document.getElementById('content-layout')" visibility-height="200"></a-back-top>
+                {{ i18n "online" }}:
+                <a-popover title='' :overlay-class-name="themeSwitcher.currentTheme">
+                  <template slot="content">
+                    <p v-for="clientEmail in onlineClients">[[ clientEmail ]]</p>
+                  </template>
+                  <a-tag color="green">[[ onlineClients.length ]]</a-tag>
+                </a-popover>
+              </div>
+            </a-col>
+            <a-col :xs="12" :sm="12" :lg="12" style="text-align: right;">
+              <a-select v-model="refreshInterval"
+                        style="width: 65px;"
+                        v-if="isRefreshEnabled"
+                        @change="changeRefreshInterval"
+                        :dropdown-class-name="themeSwitcher.currentTheme">
+                <a-select-option v-for="key in [5,10,30,60]" :value="key*1000">[[ key ]]s</a-select-option>
+              </a-select>
+              <a-icon type="sync" :spin="refreshing" @click="manualRefresh" style="margin: 0 5px;"></a-icon>
+              <a-switch v-model="isRefreshEnabled" @change="toggleRefresh"></a-switch>
+            </a-col>
+          </a-row>
+        </div>
+<!-- end header -->
+
+        <transition name="list">
           <a-card hoverable>
-            <a-row>
-              <a-col :xs="24" :sm="24" :lg="12">
-                {{ i18n "pages.inbounds.totalDownUp" }}:
-                <a-tag color="green">[[ sizeFormat(total.up) ]] / [[ sizeFormat(total.down) ]]</a-tag>
-              </a-col>
-              <a-col :xs="24" :sm="24" :lg="12">
-                {{ i18n "pages.inbounds.totalUsage" }}:
-                <a-tag color="green">[[ sizeFormat(total.up + total.down) ]]</a-tag>
-              </a-col>
-              <a-col :xs="24" :sm="24" :lg="12">
-                {{ i18n "pages.inbounds.inboundCount" }}:
-                <a-tag color="green">[[ dbInbounds.length ]]</a-tag>
-              </a-col>
-              <a-col :xs="24" :sm="24" :lg="12">
-                <template>
-                  <div>
-                    <a-back-top :target="() => document.getElementById('content-layout')" visibility-height="200"></a-back-top>
-                    {{ i18n "clients" }}:
-                    <a-tag color="green">[[ total.clients ]]</a-tag>
-                    <a-popover title='{{ i18n "disabled" }}' :overlay-class-name="themeSwitcher.currentTheme">
-                      <template slot="content">
-                        <p v-for="clientEmail in total.deactive">[[ clientEmail ]]</p>
-                      </template>
-                      <a-tag v-if="total.deactive.length">[[ total.deactive.length ]]</a-tag>
-                    </a-popover>
-                    <a-popover title='{{ i18n "depleted" }}' :overlay-class-name="themeSwitcher.currentTheme">
-                      <template slot="content">
-                        <p v-for="clientEmail in total.depleted">[[ clientEmail ]]</p>
-                      </template>
-                      <a-tag color="red" v-if="total.depleted.length">[[ total.depleted.length ]]</a-tag>
-                    </a-popover>
-                    <a-popover title='{{ i18n "depletingSoon" }}' :overlay-class-name="themeSwitcher.currentTheme">
-                      <template slot="content">
-                        <p v-for="clientEmail in total.expiring">[[ clientEmail ]]</p>
-                      </template>
-                      <a-tag color="orange" v-if="total.expiring.length">[[ total.expiring.length ]]</a-tag>
-                    </a-popover>
-                    <a-popover title='{{ i18n "online" }}' :overlay-class-name="themeSwitcher.currentTheme">
-                      <template slot="content">
-                        <p v-for="clientEmail in onlineClients">[[ clientEmail ]]</p>
-                      </template>
-                      <a-tag color="blue" v-if="onlineClients.length">[[ onlineClients.length ]]</a-tag>
-                    </a-popover>
-                  </div>
-                </template>
-              </a-col>
-            </a-row>
-          </a-card>
-        </transition>
-        <transition name="list" appear>
-          <a-card hoverable>
-            <div slot="title">
-              <a-row>
-                <a-col :xs="12" :sm="12" :lg="12">
-                  <a-button type="primary" icon="plus" @click="openAddInbound">
-                    <template v-if="!isMobile">{{ i18n "pages.inbounds.addInbound" }}</template>
-                  </a-button>
-                  <a-dropdown :trigger="['click']">
-                    <a-button type="primary" icon="menu">
-                      <template v-if="!isMobile">{{ i18n "pages.inbounds.generalActions" }}</template>
-                    </a-button>
-                    <a-menu slot="overlay" @click="a => generalActions(a)" :theme="themeSwitcher.currentTheme">
-                      <a-menu-item key="import">
-                        <a-icon type="import"></a-icon>
-                        {{ i18n "pages.inbounds.importInbound" }}
-                      </a-menu-item>
-                      <a-menu-item key="export">
-                        <a-icon type="export"></a-icon>
-                        {{ i18n "pages.inbounds.export" }}
-                      </a-menu-item>
-                      <a-menu-item key="subs" v-if="subSettings.enable">
-                        <a-icon type="export"></a-icon>
-                        {{ i18n "pages.inbounds.export" }} - {{ i18n "pages.settings.subSettings" }}
-                      </a-menu-item>
-                      <a-menu-item key="resetInbounds">
-                        <a-icon type="reload"></a-icon>
-                        {{ i18n "pages.inbounds.resetAllTraffic" }}
-                      </a-menu-item>
-                      <a-menu-item key="resetClients">
-                        <a-icon type="file-done"></a-icon>
-                        {{ i18n "pages.inbounds.resetAllClientTraffics" }}
-                      </a-menu-item>
-                      <a-menu-item key="delDepletedClients" style="color: #FF4D4F;">
-                        <a-icon type="rest"></a-icon>
-                        {{ i18n "pages.inbounds.delDepletedClients" }}
-                      </a-menu-item>
-                    </a-menu>
-                  </a-dropdown>
-                </a-col>
-                <a-col :xs="12" :sm="12" :lg="12" style="text-align: right;">
-                  <a-select v-model="refreshInterval"
-                      style="width: 65px;"
-                      v-if="isRefreshEnabled"
-                      @change="changeRefreshInterval"
-                      :dropdown-class-name="themeSwitcher.currentTheme">
-                    <a-select-option v-for="key in [5,10,30,60]" :value="key*1000">[[ key ]]s</a-select-option>
-                  </a-select>
-                  <a-icon type="sync" :spin="refreshing" @click="manualRefresh" style="margin: 0 5px;"></a-icon>
-                  <a-switch v-model="isRefreshEnabled" @change="toggleRefresh"></a-switch>
-                </a-col>
-              </a-row>
-            </div>
+
+
+<!--filter-->
             <div :style="isMobile ? '' : 'display: flex; align-items: center; justify-content: flex-start;'">
               <a-switch v-model="enableFilter"
                   :style="isMobile ? 'margin-bottom: .5rem; display: flex;' : 'margin-right: .5rem;'"
@@ -256,7 +213,11 @@
                 <a-radio-button value="online">{{ i18n "online" }}</a-radio-button>
               </a-radio-group>
             </div>
+<!-- end filter-->
+
+
             <a-back-top></a-back-top>
+
             <a-table :columns="isMobile ? mobileColumns : columns" :row-key="dbInbound => dbInbound.id"
                 :data-source="searchedInbounds"
                 :scroll="isMobile ? {} : { x: 1000 }"
@@ -266,7 +227,8 @@
                 :expand-icon-column-index="0"
                 :indent-size="0"
                 :row-class-name="dbInbound => (dbInbound.isMultiUser() ? '' : 'hideExpandIcon')"
-                style="margin-top: 10px">
+                :show-header="false"
+                     style="margin-top: 10px">
               <template slot="action" slot-scope="text, dbInbound">
                 <a-dropdown :trigger="['click']">
                   <a-icon @click="e => e.preventDefault()" type="more" style="font-size: 20px; text-decoration: solid;"></a-icon>
@@ -526,16 +488,22 @@
                   </a-badge>
                 </a-popover>
               </template>
+
+<!--client-->
               <template slot="expandedRowRender" slot-scope="record">
                 <a-table
                   :row-key="client => client.id"
                   :columns="isMobile ? innerMobileColumns : innerColumns"
                   :data-source="getInboundClients(record)"
                   :pagination=pagination(getInboundClients(record))
-                  :style="isMobile ? 'margin: -10px 2px -11px;' : 'margin: -10px 22px -11px;'">
+                  :show-header="false"
+                  :style="isMobile ? 'margin: -10px 2px -11px;' : 'margin: -10px 22px -11px;'"
+                  >
+
                   {{template "client_table"}}
                 </a-table>
               </template>
+<!-- end client-->
             </a-table>
           </a-card>
         </transition>
@@ -1272,9 +1240,8 @@
                 return formatSecond((expTime-now)/1000);
             },
             statsExpColor(dbInbound, email){
-                if (email.length == 0) return '#7a316f';
+                if (email.length == 0) return "grey";
                 clientStats = dbInbound.clientStats.find(stats => stats.email === email);
-                if (!clientStats) return '#7a316f';
                 statsColor = usageColor(clientStats.down + clientStats.up, this.trafficDiff, clientStats.total);
                 expColor = usageColor(new Date().getTime(), this.expireDiff, clientStats.expiryTime);
                 switch (true) {
@@ -1285,7 +1252,7 @@
                     case statsColor == "green" || expColor == "green":
                         return "#008771"; // Green
                     default:
-                        return "#7a316f"; // purple
+                        return "grey";
                 }
             },
             isClientEnabled(dbInbound, email) {
