@@ -146,14 +146,20 @@
               </div>
             </a-col>
             <a-col :xs="12" :sm="12" :lg="12" style="text-align: right;">
-
-              <a-button style="margin-right: 10px;" type="primary" icon="plus" @click="openAddInbound">
-              </a-button>
+              <a-icon type="sync" :spin="refreshing" @click="manualRefresh" style="margin: 0 5px;"></a-icon>
 
               <a-dropdown :trigger="['click']">
                 <a-button  icon="menu" style="background-color: transparent; border-color: grey">
                 </a-button>
                 <a-menu slot="overlay" @click="a => generalActions(a)" :theme="themeSwitcher.currentTheme">
+                  <a-menu-item>
+                    <a-button style="margin-right: 10px;" type="primary" icon="plus" @click="openAddInbound">
+                    </a-button>
+                  </a-menu-item>
+                  <a-menu-item>
+                    <a-switch vv-model="isRefreshEnabled" @change="toggleRefresh"></a-switch>
+                  </a-menu-item>
+
                   <a-menu-item key="import">
                     <a-icon type="import"></a-icon>
                     {{ i18n "pages.inbounds.importInbound" }}
@@ -180,8 +186,6 @@
                   </a-menu-item>
                 </a-menu>
               </a-dropdown>
-              <a-icon type="sync" :spin="refreshing" @click="manualRefresh" style="margin: 0 5px;"></a-icon>
-              <a-switch vv-model="isRefreshEnabled" @change="toggleRefresh"></a-switch>
             </a-col>
           </a-row>
         </div>
