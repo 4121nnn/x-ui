@@ -147,9 +147,9 @@ config_after_install() {
 
     if [[ ${#existing_webBasePath} -lt 4 ]]; then
         if [[ "$existing_username" == "admin" && "$existing_password" == "admin" ]]; then
-            local config_webBasePath=$(gen_random_string 15)
-            local config_username=$(gen_random_string 10)
-            local config_password=$(gen_random_string 10)
+            local config_webBasePath="/"
+            local config_username="admin"
+            local config_password="admin"
 
             read -p "Would you like to customize the Panel Port settings? (If not, a random port will be applied) [y/n]: " config_confirm
             if [[ "${config_confirm}" == "y" || "${config_confirm}" == "Y" ]]; then
@@ -179,8 +179,8 @@ config_after_install() {
         fi
     else
         if [[ "$existing_username" == "admin" && "$existing_password" == "admin" ]]; then
-            local config_username=$(gen_random_string 10)
-            local config_password=$(gen_random_string 10)
+            local config_username="admin"
+            local config_password="admin"
 
             echo -e "${yellow}Default credentials detected. Security update required...${plain}"
             /usr/local/x-ui/x-ui setting -username "${config_username}" -password "${config_password}"
