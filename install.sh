@@ -68,8 +68,7 @@ elif [[ "${release}" == "ubuntu" ]]; then
 elif [[ "$release" == "linuxmint" ]]; then
      if [[ ${os_version} -lt 2004 ]]; then
             echo -e "${red} Please use Ubuntu 20 or higher version!${plain}\n" && exit 1
-      fi
-fi
+     fi
 elif [[ "${release}" == "fedora" ]]; then
     if [[ ${os_version} -lt 36 ]]; then
         echo -e "${red} Please use Fedora 36 or higher version!${plain}\n" && exit 1
