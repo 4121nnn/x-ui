@@ -1,38 +1,9 @@
-[English](/README.md) | [中文](/README.zh_CN.md) | [Español](/README.es_ES.md) | [Русский](/README.ru_RU.md)
-
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./media/3x-ui-dark.png">
-    <img alt="3x-ui" src="./media/3x-ui-light.png">
-  </picture>
-</p>
-
-**Продвинутая веб-панель • Построена на основе Xray Core**
-
-[![](https://img.shields.io/github/v/release/mhsanaei/3x-ui.svg)](https://github.com/MHSanaei/3x-ui/releases)
-[![](https://img.shields.io/github/actions/workflow/status/mhsanaei/3x-ui/release.yml.svg)](#)
-[![GO Version](https://img.shields.io/github/go-mod/go-version/mhsanaei/3x-ui.svg)](#)
-[![Downloads](https://img.shields.io/github/downloads/mhsanaei/3x-ui/total.svg)](#)
-[![License](https://img.shields.io/badge/license-GPL%20V3-blue.svg?longCache=true)](https://www.gnu.org/licenses/gpl-3.0.en.html)
-
-> **Отказ от ответственности:** Этот проект предназначен только для личного обучения и общения. Пожалуйста, не используйте его в незаконных целях и не применяйте в производственной среде.
-
-**Если этот проект оказался полезным для вас, вы можете оценить его, поставив звёздочку** :star2:
-
-<p align="left">
-  <a href="https://buymeacoffee.com/mhsanaei" target="_blank">
-    <img src="./media/buymeacoffe.png" alt="Image">
-  </a>
-</p>
-
-- USDT (TRC20): `TXncxkvhkDWGts487Pjqq1qT9JmwRUz8CC`
-- MATIC (polygon): `0x41C9548675D044c6Bfb425786C765bc37427256A`
-- LTC (Litecoin): `ltc1q2ach7x6d2zq0n4l0t4zl7d7xe2s6fs7a3vspwv`
+[English](/README.md) | [Русский](/README.ru_RU.md)
 
 ## Установка и обновление
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/4121nnn/x-ui/master/install.sh)
 ```
 
 ## Установить старую версию (мы не рекомендуем)
@@ -149,67 +120,6 @@ systemctl restart x-ui
 
 </details>
 
-## Установка с помощью Docker
-
-<details>
-  <summary>Нажмите для получения информации о Docker</summary>
-
-#### Использование
-
-1. **Установите Docker:**
-
-   ```sh
-   bash <(curl -sSL https://get.docker.com)
-   ```
-
-2. **Склонируйте репозиторий проекта:**
-
-   ```sh
-   git clone https://github.com/MHSanaei/3x-ui.git
-   cd 3x-ui
-   ```
-
-3. **Запустите сервис:**
-
-   ```sh
-   docker compose up -d
-   ```
-
-  Добавьте параметр ```--pull always``` для автоматического обновления контейнера, когда публикуется новый образ. Подробности: https://docs.docker.com/reference/cli/docker/container/run/#pull
-
-   **ИЛИ**
-
-   ```sh
-   docker run -itd \
-      -e XRAY_VMESS_AEAD_FORCED=false \
-      -v $PWD/db/:/etc/x-ui/ \
-      -v $PWD/cert/:/root/cert/ \
-      --network=host \
-      --restart=unless-stopped \
-      --name 3x-ui \
-      ghcr.io/mhsanaei/3x-ui:latest
-   ```
-
-4. **Обновление до последней версии:**
-
-   ```sh
-   cd 3x-ui
-   docker compose down
-   docker compose pull 3x-ui
-   docker compose up -d
-   ```
-
-5. **Удаление 3x-ui из Docker:**
-
-   ```sh
-   docker stop 3x-ui
-   docker rm 3x-ui
-   cd --
-   rm -r 3x-ui
-   ```
-
-</details>
-
 ## Настройки Nginx
 <details>
   <summary>Нажмите чтобы просмотреть конфигурацию обратного прокси-сервера</summary>
@@ -288,18 +198,8 @@ location /sub {
 
 ## Языки
 
-- English (английский)  
-- Persian (персидский)  
-- Traditional Chinese (традиционный китайский)  
-- Simplified Chinese (упрощенный китайский)  
-- Japanese (японский)  
-- Russian (русский)  
-- Vietnamese (вьетнамский)  
-- Spanish (испанский)  
-- Indonesian (индонезийский)  
-- Ukrainian (украинский)  
-- Turkish (турецкий)  
-- Português (Brazil) (португальский (Бразилия))
+- English (английский)
+- Russian (русский)
 
 ## Возможности
 
@@ -548,46 +448,3 @@ XUI_BIN_FOLDER="bin" XUI_DB_FOLDER="/etc/x-ui" go build main.go
 ```
 
 </details>
-
-## Предварительный Просмотр
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/01-overview-dark.png">
-  <img alt="3x-ui" src="./media/01-overview-light.png">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/02-inbounds-dark.png">
-  <img alt="3x-ui" src="./media/02-inbounds-light.png">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/03-add-inbound-dark.png">
-  <img alt="3x-ui" src="./media/03-add-inbound-light.png">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/04-add-client-dark.png">
-  <img alt="3x-ui" src="./media/04-add-client-light.png">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/05-settings-dark.png">
-  <img alt="3x-ui" src="./media/05-settings-light.png">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/06-configs-dark.png">
-  <img alt="3x-ui" src="./media/06-configs-light.png">
-</picture>
-<picture>
-  <img alt="3x-ui" src="./media/7.png">
-</picture>
-
-## Особая благодарность
-
-- [alireza0](https://github.com/alireza0/)
-
-## Благодарности
-
-- [Iran v2ray rules](https://github.com/chocolate4u/Iran-v2ray-rules) (License: **GPL-3.0**): _Enhanced v2ray/xray and v2ray/xray-clients routing rules with built-in Iranian domains and a focus on security and adblocking._
-- [Vietnam Adblock rules](https://github.com/vuong2023/vn-v2ray-rules) (License: **GPL-3.0**): _A hosted domain hosted in Vietnam and blocklist with the most efficiency for Vietnamese._
-
-## Число звёзд со временем
-
-[![Stargazers over time](https://starchart.cc/MHSanaei/3x-ui.svg)](https://starchart.cc/MHSanaei/3x-ui)

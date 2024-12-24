@@ -65,6 +65,11 @@ elif [[ "${release}" == "ubuntu" ]]; then
     if [[ ${os_version} -lt 2004 ]]; then
         echo -e "${red} Please use Ubuntu 20 or higher version!${plain}\n" && exit 1
     fi
+elif [[ "$release" == "linuxmint" ]]; then
+     if [[ ${os_version} -lt 2004 ]]; then
+            echo -e "${red} Please use Ubuntu 20 or higher version!${plain}\n" && exit 1
+      fi
+fi
 elif [[ "${release}" == "fedora" ]]; then
     if [[ ${os_version} -lt 36 ]]; then
         echo -e "${red} Please use Fedora 36 or higher version!${plain}\n" && exit 1
@@ -110,6 +115,9 @@ else
 fi
 
 install_base() {
+    if [[ "$release" == "linuxmint" ]]; then
+          release="ubuntu"
+    fi
     case "${release}" in
     ubuntu | debian | armbian)
         apt-get update && apt-get install -y -q wget curl tar tzdata

@@ -154,10 +154,13 @@
                 <a-menu slot="overlay" @click="a => generalActions(a)" :theme="themeSwitcher.currentTheme">
                   <a-menu-item>
                     <a-button style="margin-right: 10px;" type="primary" icon="plus" @click="openAddInbound">
+                      {{ i18n "newPort" }}
                     </a-button>
+
                   </a-menu-item>
                   <a-menu-item>
                     <a-switch vv-model="isRefreshEnabled" @change="toggleRefresh"></a-switch>
+                    Autoupdate
                   </a-menu-item>
 
                   <a-menu-item key="import">
